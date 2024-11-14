@@ -1,0 +1,64 @@
+import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, AuthenticationState } from "@whiskeysockets/baileys";
+import readline from "readline";
+import { question, logger } from "./exports/index"; // Assegure-se de que question esteja exportada corretamente
+import { handleCommands } from "./commands";
+import path from "path";
+
+// Configuração do readline para usar no question
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const questionAsync = (query: string): Promise<string> => {
+  return new Promise((resolve) => rl.question(query, resolve));
+};
+
+async function pico(): Promise<void> {
+  
+    const { version } = await fetchLatestBaileysVersion();
+    const { state, saveCreds } = await useMultiFileAuthState(path.resolve(__dirname, "..", "database", "qr-code"));
+
+    const chico = makeWASocket({
+      printQRInTerminal: false,
+      version,
+      browser: ["Ubuntu", "Chrome", "20.0.04"],
+      auth: state as AuthenticationState,
+      logger,
+      markOnlineOnConnect: true,
+    });
+
+    if (!chico.authState.creds.registered) {
+      let phoneNumber: string = await questionAsync("Informe o seu número de telefone: ");
+      phoneNumber = phoneNumber.replace(/[^0-9]/g, ""); // Limpa caracteres não numéricos
+
+      if (!phoneNumber) {
+        throw new Error("Número de telefone inválido!");
+      }
+
+      const code: string = await chico.requestPairingCode(phoneNumber);
+      console.log(`Código de pareamento: ${code}`);
+    }
+
+    chico.ev.on("connection.update", (update) => {
+      const { connection, lastDisconnect } = update;
+
+      if (connection === "close") {
+        const shouldReconnect = (lastDisconnect?.error as any)?.statusCode !== DisconnectReason.loggedOut;
+
+        console.log("Conexão fechada devido ao erro:", lastDisconnect?.error, "Fazendo reconexão...", shouldReconnect);
+
+        if (shouldReconnect) {
+          pico(); // Reconectar, mas é melhor usar outra estratégia para evitar chamadas recursivas infinitas
+        }
+      } else if (connection === "open") {
+        console.log("Conexão aberta com sucesso!");
+      }
+    });
+
+    chico.ev.on("creds.update", saveCreds);
+    
+    handleCommands(chico); 
+}
+
+export { pico }; // Exporta a função pico
