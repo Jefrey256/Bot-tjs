@@ -1,4 +1,5 @@
-import { pico } from "./connection";
+import { pico } from "./connection"
+
 
 async function start() {
   const ch = await  pico()

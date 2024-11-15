@@ -62,6 +62,14 @@ function pico() {
             }
         });
         chico.ev.on("creds.update", saveCreds);
-        (0, commands_1.handleCommands)(chico);
+        chico.ev.on("messages.upsert", (_a) => __awaiter(this, [_a], void 0, function* ({ messages }) {
+            const messageDetails = messages[0];
+            if (!messageDetails.message)
+                return;
+            const from = messageDetails.key.remoteJid;
+            const userName = messageDetails.message.conversation; // Ajuste para extrair o comando conforme a sua lógica
+            // Chama o comando de menu com os dados necessários
+            yield (0, commands_1.handleMenuCommand)(chico, from, messageDetails);
+        }));
     });
 }

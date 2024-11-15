@@ -9,30 +9,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleCommands = handleCommands;
-const message_1 = require("../exports/message");
-const caption_1 = require("./caption");
-function handleCommands(chico) {
+exports.handleMenuCommand = handleMenuCommand;
+const help_1 = require("./users/help");
+const menu_1 = require("./users/menu");
+const ping_1 = require("./users/ping");
+// Função para tratar os comandos
+function handleMenuCommand(chico, from, messageDetails) {
     return __awaiter(this, void 0, void 0, function* () {
-        chico.ev.on("messages.upsert", (_a) => __awaiter(this, [_a], void 0, function* ({ messages }) {
-            const messageDetails = messages[0];
-            if (!messageDetails.message)
-                return;
+        // Extração do comando a partir da mensagem (ajuste conforme necessário)
+        const messageText = messageDetails.message.conversation || "";
+        const commandName = messageText.trim().toLowerCase().replace(/^./, ""); // Remove prefixo como '.' ou '!'
+        // Mapeamento de comandos
+        const commands = {
+            menu: menu_1.executeMenuCommand,
+            help: help_1.executeHelpCommand,
+            ping: ping_1.executePingCommand,
+        };
+        // Verifique se o comando existe
+        if (commands[commandName]) {
             try {
-                const { finalMessageText, from, isCommand, commandName, args, userName } = (0, message_1.extractMessage)(messageDetails);
-                const { enviarAudioGravacao, enviarImagem } = (0, message_1.setupMessagingServices)(chico, from, messageDetails);
-                switch (commandName) {
-                    case "menu":
-                    case "help":
-                        yield enviarAudioGravacao("assets/music/iphone.ogg"),
-                            enviarImagem("assets/img/lol.png", (0, caption_1.menuCaption)(userName));
-                        break;
-                }
+                yield commands[commandName](chico, from, messageDetails); // Executa o comando
             }
             catch (error) {
-                console.log("Ocorreu um erro:", error);
+                console.log(`Erro ao executar o comando '${commandName}':`, error);
             }
-        }));
+        }
+        else {
+            console.log(`Comando '${commandName}' não encontrado.`);
+        }
     });
 }
-;

@@ -1,7 +1,7 @@
-import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, AuthenticationState } from "@whiskeysockets/baileys";
+ import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, AuthenticationState } from "@whiskeysockets/baileys";
 import readline from "readline";
 import { question, logger } from "./exports/index"; // Assegure-se de que question esteja exportada corretamente
-import { handleCommands } from "./commands";
+import { handleMenuCommand } from "./commands";
 import path from "path";
 
 // Configuração do readline para usar no question
@@ -14,7 +14,7 @@ const questionAsync = (query: string): Promise<string> => {
   return new Promise((resolve) => rl.question(query, resolve));
 };
 
-async function pico(): Promise<void> {
+export async function pico(): Promise<void> {
   
     const { version } = await fetchLatestBaileysVersion();
     const { state, saveCreds } = await useMultiFileAuthState(path.resolve(__dirname, "..", "database", "qr-code"));
@@ -58,7 +58,16 @@ async function pico(): Promise<void> {
 
     chico.ev.on("creds.update", saveCreds);
     
-    handleCommands(chico); 
-}
+    chico.ev.on("messages.upsert", async ({ messages }) => {
+    const messageDetails = messages[0];
+    if (!messageDetails.message) return;
 
-export { pico }; // Exporta a função pico
+    const from = messageDetails.key.remoteJid;
+    const userName = messageDetails.message.conversation;  // Ajuste para extrair o comando conforme a sua lógica
+
+    // Chama o comando de menu com os dados necessários
+    await handleMenuCommand(chico, from, messageDetails);
+
+  });
+    
+}

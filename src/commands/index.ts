@@ -1,27 +1,31 @@
-import { extractMessage, setupMessagingServices } from "../exports/message";
-import { menuCaption } from "./caption";
+import { executeHelpCommand } from "./users/help";
+import { executeMenuCommand } from "./users/menu";
+import { executePingCommand } from "./users/ping";
+import { executeSetProfilePictureCommand } from "./admin/alt";
 
-export async function handleCommands(chico) {
-  chico.ev.on("messages.upsert", async ({ messages }) => {
-    const messageDetails = messages[0];
-    
-    if (!messageDetails.message) return;
 
+// Função para tratar os comandos
+export async function handleMenuCommand(chico, from, messageDetails) {
+  // Extração do comando a partir da mensagem (ajuste conforme necessário)
+  const messageText = messageDetails.message.conversation || "";
+  const commandName = messageText.trim().toLowerCase().replace(/^./, ""); // Remove prefixo como '.' ou '!'
+  
+  // Mapeamento de comandos
+  const commands = {
+    menu: executeMenuCommand,
+    help: executeHelpCommand,
+    ping: executePingCommand,
+    alt: executeSetProfilePictureCommand,
+  };
+
+  // Verifique se o comando existe
+  if (commands[commandName]) {
     try {
-      const { finalMessageText, from, isCommand, commandName, args, userName } = extractMessage(messageDetails);
-      const { enviarAudioGravacao, enviarImagem } = setupMessagingServices(chico, from, messageDetails);
-      
-      switch (commandName) {
-        case "menu":
-        case "help":
-          await enviarAudioGravacao("assets/music/iphone.ogg"),
-          enviarImagem("assets/img/lol.png", menuCaption(userName));
-          
-          break;
-      }
-      
+      await commands[commandName](chico, from, messageDetails);  // Executa o comando
     } catch (error) {
-      console.log("Ocorreu um erro:", error);
+      console.log(`Erro ao executar o comando '${commandName}':`, error);
     }
-  });
-};
+  } else {
+    console.log(`Comando '${commandName}' não encontrado.`);
+  }
+}
