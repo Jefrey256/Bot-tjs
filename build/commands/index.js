@@ -13,6 +13,8 @@ exports.handleMenuCommand = handleMenuCommand;
 const help_1 = require("./users/help");
 const menu_1 = require("./users/menu");
 const ping_1 = require("./users/ping");
+const alt_1 = require("./admin/alt");
+const perfil_1 = require("./users/perfil");
 // Função para tratar os comandos
 function handleMenuCommand(chico, from, messageDetails) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -21,9 +23,11 @@ function handleMenuCommand(chico, from, messageDetails) {
         const commandName = messageText.trim().toLowerCase().replace(/^./, ""); // Remove prefixo como '.' ou '!'
         // Mapeamento de comandos
         const commands = {
+            p: perfil_1.perfil,
             menu: menu_1.executeMenuCommand,
             help: help_1.executeHelpCommand,
             ping: ping_1.executePingCommand,
+            alt: alt_1.executeSetProfilePictureCommand,
         };
         // Verifique se o comando existe
         if (commands[commandName]) {

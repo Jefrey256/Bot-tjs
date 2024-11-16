@@ -10,10 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.executePingCommand = executePingCommand;
-function executePingCommand(_a) {
-    return __awaiter(this, arguments, void 0, function* ({ chico, from }) {
+const message_1 = require("../../exports/message");
+function executePingCommand(chico, from, messageDetails) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { enviarTexto } = (0, message_1.setupMessagingServices)(chico, from, messageDetails);
         try {
-            yield chico.sendMessage(from, { text: "Pong!" });
+            enviarTexto("Pong!!");
         }
         catch (error) {
             console.log("Erro ao executar o comando 'ping':", error);

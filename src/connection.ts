@@ -1,8 +1,9 @@
  import { makeWASocket, DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, AuthenticationState } from "@whiskeysockets/baileys";
 import readline from "readline";
-import { question, logger } from "./exports/index"; // Assegure-se de que question esteja exportada corretamente
+import { question } from "./exports/index"; // Assegure-se de que question esteja exportada corretamente
 import { handleMenuCommand } from "./commands";
 import path from "path";
+import pino from "pino"
 
 // Configuração do readline para usar no question
 const rl = readline.createInterface({
@@ -13,6 +14,7 @@ const rl = readline.createInterface({
 const questionAsync = (query: string): Promise<string> => {
   return new Promise((resolve) => rl.question(query, resolve));
 };
+const logger = pino({level: "silent"})
 
 export async function pico(): Promise<void> {
   

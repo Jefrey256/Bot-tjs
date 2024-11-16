@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.executeMenuCommand = executeMenuCommand;
+const axios_1 = __importDefault(require("axios"));
 const message_1 = require("../../exports/message");
 const caption_1 = require("../caption");
 function executeMenuCommand(chico, from, userName) {
@@ -18,8 +22,13 @@ function executeMenuCommand(chico, from, userName) {
         try {
             // Envia áudio utilizando o método correto
             yield enviarAudioGravacao("assets/music/iphone.ogg");
+            // URL da imagem
+            const imageUrl = "https://api.telegram.org/file/bot7893516891:AAEzMszRACX92hdaRXwxzAtLL9QfHOXeiTI/photos/file_1.jpg";
+            // Baixar a imagem usando axios
+            const response = yield axios_1.default.get(imageUrl, { responseType: 'arraybuffer' });
+            const imageBuffer = Buffer.from(response.data, 'binary');
             // Envia a imagem com o texto da legenda
-            yield enviarImagem("assets/img/lol.png", (0, caption_1.menuCaption)(userName));
+            yield enviarImagem(imageBuffer, (0, caption_1.menuCaption)(userName)); // Passando o buffer da imagem diretamente
         }
         catch (error) {
             console.log("Erro ao executar o comando 'help':", error);
