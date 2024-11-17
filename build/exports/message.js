@@ -18,32 +18,32 @@ const settings_json_1 = require("../settings.json");
 const fs_1 = __importDefault(require("fs"));
 // Extrator de mensagem
 const extractMessage = (messageDetails) => {
-    var _a, _b, _c, _d, _e, _f;
-    // Extrai o texto da mensagem, se existir, ou retorna uma string vazia
-    const finalMessageText = ((_a = messageDetails.message) === null || _a === void 0 ? void 0 : _a.text) || "";
-    const EnviarImagemUrl = ((_c = (_b = messageDetails.message) === null || _b === void 0 ? void 0 : _b.imageMessage) === null || _c === void 0 ? void 0 : _c.url) || "";
-    // Identifica quem enviou a mensagem (o ID remoto do WhatsApp)
-    const from = ((_d = messageDetails.key) === null || _d === void 0 ? void 0 : _d.remoteJid) || "Remetente desconhecido";
-    // Nome do usuário que enviou a mensagem (se disponível, caso contrário, "Usuário Desconhecido")
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    const finalMessageText = ((_a = messageDetails.message) === null || _a === void 0 ? void 0 : _a.conversation) || "";
+    // O 'from' já existe, então apenas pegamos o número sem o sufixo '@s.whatsapp.net' (se for de grupo)
+    const fromUser = ((_c = (_b = messageDetails.key) === null || _b === void 0 ? void 0 : _b.participant) === null || _c === void 0 ? void 0 : _c.split('@')[0]) || ((_e = (_d = messageDetails.key) === null || _d === void 0 ? void 0 : _d.remoteJid) === null || _e === void 0 ? void 0 : _e.split('@')[0]);
+    const from = ((_f = messageDetails.key) === null || _f === void 0 ? void 0 : _f.remoteJid) || "Remetente desconhecido";
     const userName = (messageDetails === null || messageDetails === void 0 ? void 0 : messageDetails.pushName) || "Usuário Desconhecido";
-    // Verifica se a mensagem é um comando (se começa com o PREFIX)
     const isCommand = finalMessageText.startsWith(settings_json_1.PREFIX);
-    // Identifica o participante do grupo (em mensagens de grupo) ou o próprio remetente em mensagens privadas
-    const participant = ((_e = messageDetails.key) === null || _e === void 0 ? void 0 : _e.participant) || ((_f = messageDetails === null || messageDetails === void 0 ? void 0 : messageDetails.key) === null || _f === void 0 ? void 0 : _f.remoteJid);
-    // Se for um comando, extrai o nome do comando (a palavra após o PREFIX)
+    const participant = ((_g = messageDetails.key) === null || _g === void 0 ? void 0 : _g.participant) || ((_h = messageDetails.key) === null || _h === void 0 ? void 0 : _h.remoteJid);
     const commandName = isCommand ? finalMessageText.slice(settings_json_1.PREFIX.length).split(" ")[0] : "";
-    // Divide o texto da mensagem em palavras e extrai os argumentos (tudo após o nome do comando)
     const args = finalMessageText.split(" ").slice(1);
-    // Retorna um objeto com todos os detalhes extraídos da mensagem
+    // Extração das mídias
+    const imageMessage = ((_j = messageDetails.message) === null || _j === void 0 ? void 0 : _j.imageMessage) || null;
+    const videoMessage = ((_k = messageDetails.message) === null || _k === void 0 ? void 0 : _k.videoMessage) || null;
+    const audioMessage = ((_l = messageDetails.message) === null || _l === void 0 ? void 0 : _l.audioMessage) || null;
     return {
         finalMessageText, // Texto completo da mensagem
-        from, // ID do remetente
+        from, // ID do remetente (pode ser do grupo)
+        fromUser, // Número do usuário sem o sufixo
         isCommand, // Se é ou não um comando
         commandName, // Nome do comando (se aplicável)
         args, // Lista de argumentos do comando
-        userName, // Nome do usuário (ou valor padrão)
-        participant, // ID do participante (grupo ou privado)
-        EnviarImagemUrl
+        userName, // Nome do usuário
+        participant, // ID do participante (se for de grupo ou privado)
+        imageMessage, // Imagem enviada (se houver)
+        videoMessage, // Vídeo enviado (se houver)
+        audioMessage, // Áudio enviado (se houver)
     };
 };
 exports.extractMessage = extractMessage;
@@ -165,8 +165,8 @@ function setupMessagingServices(chico, from, messageDetails) {
             console.error('Erro ao enviar contato:', error);
         }
     });
-    console.log('from:', from);
-    console.log('messageDetails:', messageDetails);
+    //console.log('from:', from);
+    //console.log('messageDetails:', messageDetails);
     return {
         enviarTexto,
         enviarAudioGravacao,

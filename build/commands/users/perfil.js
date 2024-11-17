@@ -17,14 +17,15 @@ function perfil(chico, from, messageDetails) {
         function geraNumero() {
             return Math.floor(Math.random() * 100) + 1;
         }
-        const { userName, participant } = (0, message_2.extractMessage)(chico);
+        // Corrigir: A extração correta do nome de usuário e número
+        const { userName, fromUser } = (0, message_2.extractMessage)(messageDetails);
         const { enviarTexto, enviarImagem } = (0, message_1.setupMessagingServices)(chico, from, messageDetails);
         const imageUrl = "https://api.telegram.org/file/bot7893516891:AAEzMszRACX92hdaRXwxzAtLL9QfHOXeiTI/photos/file_2.jpg";
         try {
             const perfilMenuText = `
     ==== *Menu de Perfil* ====
-    👤 Nome: ${userName || "Usuário Desconhecido"}
-    📱 Número: ${participant || "Não identificado"}
+    👤 Nome: ${userName}
+    📱 Número: ${fromUser}
     🤖 Inteligência: ${geraNumero()}%
     🙃 Burrice: ${geraNumero()}%
 
@@ -43,7 +44,7 @@ function perfil(chico, from, messageDetails) {
             }, { quoted: messageDetails });
         }
         catch (error) {
-            console.log("Erro ao executar o comando 'ping':", error);
+            console.log("Erro ao executar o comando 'perfil':", error);
         }
     });
 }

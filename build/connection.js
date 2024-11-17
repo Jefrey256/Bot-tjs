@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.pico = pico;
 const baileys_1 = require("@whiskeysockets/baileys");
 const readline_1 = __importDefault(require("readline"));
-const index_1 = require("./exports/index"); // Assegure-se de que question esteja exportada corretamente
 const commands_1 = require("./commands");
 const path_1 = __importDefault(require("path"));
+const pino_1 = __importDefault(require("pino"));
 // Configuração do readline para usar no question
 const rl = readline_1.default.createInterface({
     input: process.stdin,
@@ -26,6 +26,7 @@ const rl = readline_1.default.createInterface({
 const questionAsync = (query) => {
     return new Promise((resolve) => rl.question(query, resolve));
 };
+const logger = (0, pino_1.default)({ level: "silent" });
 function pico() {
     return __awaiter(this, void 0, void 0, function* () {
         const { version } = yield (0, baileys_1.fetchLatestBaileysVersion)();
@@ -35,7 +36,7 @@ function pico() {
             version,
             browser: ["Ubuntu", "Chrome", "20.0.04"],
             auth: state,
-            logger: index_1.logger,
+            logger,
             markOnlineOnConnect: true,
         });
         if (!chico.authState.creds.registered) {

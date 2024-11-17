@@ -2,8 +2,9 @@ import { PREFIX } from "../settings.json";
 import fs from "fs";
 import axios from "axios"
 
-// Extrator de mensagem
 export const extractMessage = (messageDetails) => {
+  const mentions = messageDetails.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
+  
   const finalMessageText = messageDetails.message?.conversation || "";
   
   // O 'from' já existe, então apenas pegamos o número sem o sufixo '@s.whatsapp.net' (se for de grupo)
@@ -13,6 +14,10 @@ export const extractMessage = (messageDetails) => {
   const userName = messageDetails?.pushName || "Usuário Desconhecido";
   const isCommand = finalMessageText.startsWith(PREFIX);
   const participant = messageDetails.key?.participant || messageDetails.key?.remoteJid;
+  
+  
+  
+  
   const commandName = isCommand ? finalMessageText.slice(PREFIX.length).split(" ")[0] : "";
   const args = finalMessageText.split(" ").slice(1);
 
@@ -22,6 +27,7 @@ export const extractMessage = (messageDetails) => {
   const audioMessage = messageDetails.message?.audioMessage || null;
 
   return { 
+    mentions,
     finalMessageText,  // Texto completo da mensagem
     from,              // ID do remetente (pode ser do grupo)
     fromUser,          // Número do usuário sem o sufixo
@@ -33,13 +39,17 @@ export const extractMessage = (messageDetails) => {
     imageMessage,      // Imagem enviada (se houver)
     videoMessage,      // Vídeo enviado (se houver)
     audioMessage,      // Áudio enviado (se houver)
+    
   };
+  
 };
 
 
 
 
-// Setup de serviços de mensagem
+
+
+
 export function setupMessagingServices(chico, from, messageDetails) {
   
   const enviarTexto = async (texto) => {
@@ -161,7 +171,7 @@ const enviarImagem = async (arquivo, text) => {
     }
   };
 
-  console.log('from:', from);
+  //console.log('from:', from);
   //console.log('messageDetails:', messageDetails);
 
   return {

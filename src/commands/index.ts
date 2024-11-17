@@ -24,13 +24,13 @@ export async function handleMenuCommand(chico, from, messageDetails) {
     try {
       await commands[commandName](chico, from, messageDetails);  // Executa o comando
     } catch (error) {
-      await enviarTexto(`Erro ao executar o comando '${commandName}': ${error.message}`);
+      //await enviarTexto(`Erro ao executar o comando '${commandName}': ${error.message}`);
       console.log(`Erro ao executar o comando '${commandName}':`, error);
     }
   } else {
     // Caso o comando não seja encontrado
     const validCommands = Object.keys(commands).join(", "); // Lista de comandos válidos
-    await enviarTexto(`Comando '${commandName}' não encontrado. Comandos válidos: ${validCommands}`);
+   // await enviarTexto(`Comando '${commandName}' não encontrado. Comandos válidos: ${validCommands}`);
     console.log(`Comando '${commandName}' não encontrado.`);
   }
 }

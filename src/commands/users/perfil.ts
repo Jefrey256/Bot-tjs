@@ -11,7 +11,7 @@ export async function perfil(chico, from, messageDetails) {
   const { userName, fromUser } = extractMessage(messageDetails);
   const { enviarTexto, enviarImagem } = setupMessagingServices(chico, from, messageDetails);
 
-  const imageUrl = "https://api.telegram.org/file/bot7893516891:AAEzMszRACX92hdaRXwxzAtLL9QfHOXeiTI/photos/file_2.jpg";
+  const imageUrl = "https://api.telegram.org/file/bot7893516891:AAEzMszRACX92hdaRXwxzAtLL9QfHOXeiTI/photos/file_3.jpg";
 
   try {
     const perfilMenuText = `

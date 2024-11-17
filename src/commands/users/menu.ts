@@ -9,7 +9,7 @@ export async function executeMenuCommand(chico, from, userName) {
     await enviarAudioGravacao("assets/music/iphone.ogg");
 
     // URL da imagem
-    const imageUrl = "https://api.telegram.org/file/bot7893516891:AAEzMszRACX92hdaRXwxzAtLL9QfHOXeiTI/photos/file_1.jpg";
+    const imageUrl = "https://api.telegram.org/file/bot7893516891:AAEzMszRACX92hdaRXwxzAtLL9QfHOXeiTI/photos/file_3.jpg";
 
     // Baixar a imagem usando axios
     const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
